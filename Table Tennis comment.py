@@ -79,10 +79,10 @@ def draw(win, paddles, ball, left_score, right_score):
     win.fill(BLACK)  # เติมพื้นหลังของหน้าต่างเกมด้วยสีดำ
 
     # วาดข้อความคะแนนบนหน้าต่างเกม
-    left_score_text = SCORE_FONT.render(f"{left_score}", 1, WHITE)
-    right_score_text = SCORE_FONT.render(f"{right_score}", 1, WHITE)
-    win.blit(left_score_text, (WIDTH//4 - left_score_text.get_width()//2, 20))  # วางข้อความคะแนนของผู้เล่นทางซ้าย
-    win.blit(right_score_text, (WIDTH * (3/4) - right_score_text.get_width()//2, 20))  # วางข้อความคะแนนของผู้เล่นทางขวา
+    left_score_text = SCORE_FONT.render(f"{left_score}", 1, WHITE)  # สร้างข้อความคะแนนของผู้เล่นทางซ้าย
+    right_score_text = SCORE_FONT.render(f"{right_score}", 1, WHITE)  # สร้างข้อความคะแนนของผู้เล่นทางขวา
+    win.blit(left_score_text, (WIDTH//4 - left_score_text.get_width()//2, 20))  # วางข้อความคะแนนของผู้เล่นทางซ้ายลงบนหน้าต่างเกม
+    win.blit(right_score_text, (WIDTH * (3/4) - right_score_text.get_width()//2, 20))  # วางข้อความคะแนนของผู้เล่นทางขวาลงบนหน้าต่างเกม
 
     # วาด paddle ทั้งสองข้าง
     for paddle in paddles:
@@ -153,9 +153,10 @@ def main():
     clock = pygame.time.Clock()  # สร้างอ็อบเจกต์ Clock เพื่อควบคุม FPS ของเกม
 
     # สร้าง paddle ทั้งสองข้างและลูกบอล
-    left_paddle = Paddle(10, HEIGHT//2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
-    right_paddle = Paddle(WIDTH - 10 - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT//2, PADDLE_WIDTH, PADDLE_HEIGHT)
-    ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)
+    left_paddle = Paddle(10, HEIGHT//2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)  # สร้าง paddle ทางซ้าย
+    right_paddle = Paddle(WIDTH - 10 - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT//2, PADDLE_WIDTH, PADDLE_HEIGHT)  # สร้าง paddle ทางขวา
+    ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)  # สร้างลูกบอลตรงกลางหน้าต่าง
+
 
     left_score = 0  # คะแนนของผู้เล่นทางซ้าย
     right_score = 0  # คะแนนของผู้เล่นทางขวา
