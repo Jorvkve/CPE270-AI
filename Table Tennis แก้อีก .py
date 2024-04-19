@@ -140,81 +140,76 @@ def handle_ai_movement(ball, right_paddle, player_vel):
     target_y = ball.y - right_paddle.height / 2
     
     # ตรวจสอบความแตกต่างในตำแหน่งระหว่าง paddle ของ AI และตำแหน่งที่ต้องการจะไป
-    if abs(right_paddle.y - target_y) > player_vel:
-        if right_paddle.y < target_y:
-            right_paddle.move(up=False)  # ขยับลง
-        elif right_paddle.y > target_y:
-            right_paddle.move(up=True)  # ขยับขึ้น
+    if abs(right_paddle.y - target_y) > player_vel: # ถ้าความต่างระหว่างตำแหน่งปัจจุบันของ paddle กับตำแหน่งเป้าหมายมากกว่าความเร็วสูงสุดของ paddle
+        if right_paddle.y < target_y: # ถ้าตำแหน่งปัจจุบันของ paddle ต่ำกว่าตำแหน่งเป้าหมาย
+            right_paddle.move(up=False)  # เคลื่อน paddle ขึ้น
+        elif right_paddle.y > target_y: # ถ้าตำแหน่งปัจจุบันของ paddle สูงกว่าตำแหน่งเป้าหมาย
+            right_paddle.move(up=True)  # เคลื่อน paddle ลง
     else:
-        right_paddle.y = target_y  # ขยับตามตำแหน่งที่ต้องการ
-
+        # หากความแตกต่างเล็กมาก เคลื่อนไปที่ตำแหน่งเป้าหมายโดยตรง
+        right_paddle.y = target_y  #กำหนดตำแหน่งปัจจุบันของ paddle ให้เป็นตำแหน่งเป้าหมายโดยตรง
 
 def main():
-    run = True
-    clock = pygame.time.Clock()
+    run = True # ตัวแปรเพื่อตรวจสอบว่าเกมยังคงทำงานหรือไม่
+    clock = pygame.time.Clock() # สร้างอ็อบเจกต์ Clock เพื่อควบคุม FPS ของเกม
 
     # สร้าง paddle สำหรับผู้เล่นทั้งสองข้างและลูกบอล
-    left_paddle = Paddle(10, HEIGHT//2 - PADDLE_HEIGHT //
-                         2, PADDLE_WIDTH, PADDLE_HEIGHT)
-    right_paddle = Paddle(WIDTH - 10 - PADDLE_WIDTH, HEIGHT //
-                          2 - PADDLE_HEIGHT//2, PADDLE_WIDTH, PADDLE_HEIGHT)
-    ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)
+    left_paddle = Paddle(10, HEIGHT//2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT) # สร้าง paddle ทางซ้าย
+    right_paddle = Paddle(WIDTH - 10 - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT//2, PADDLE_WIDTH, PADDLE_HEIGHT) # สร้าง paddle ทางขวา
+    ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS) # สร้างลูกบอลตรงกลางหน้าต่าง
 
-    left_score = 0
-    right_score = 0
+    left_score = 0 # คะแนนของผู้เล่นทางซ้าย
+    right_score = 0 # คะแนนของผู้เล่นทางขวา
 
     player_vel = left_paddle.VEL  # ใช้ความเร็วของผู้เล่นเป็นค่าเริ่มต้น
 
     while run:
-        clock.tick(FPS)
-        draw(WIN, [left_paddle, right_paddle], ball, left_score, right_score)
+        clock.tick(FPS) # กำหนด FPS ของเกม
+        draw(WIN, [left_paddle, right_paddle], ball, left_score, right_score) # วาดส่วนต่าง ๆ ของเกมและแสดงคะแนน
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                break
+        for event in pygame.event.get(): # วนลูปเหตุการณ์ที่เกิดขึ้นในเกม
+            if event.type == pygame.QUIT: # ถ้ามีการคลิกปุ่มปิดหน้าต่าง
+                run = False # หยุดการทำงานของเกม
+                break # ออกจากลูป
 
-        keys = pygame.key.get_pressed()
-        handle_user_movement(keys, left_paddle)
+        keys = pygame.key.get_pressed() # รับคีย์ที่กด
+        handle_user_movement(keys, left_paddle) # จัดการการเคลื่อนไหวของ paddle ของผู้ใช้
+        handle_ai_movement(ball, right_paddle, player_vel) # จัดการการเคลื่อนไหวของ paddle ของ AI
 
-        # ปรับความเร็วของ AI ให้เท่ากับความเร็วของผู้เล่น
-        handle_ai_movement(ball, right_paddle, player_vel)
-
-        ball.move()
-        handle_collision(ball, left_paddle, right_paddle)
+        ball.move() # ย้ายลูกบอล
+        handle_collision(ball, left_paddle, right_paddle) # ตรวจสอบการชนของลูกบอลกับ paddle
 
         # ตรวจสอบการชนของลูกบอลกับขอบกระดานและนับคะแนน
-        if ball.x < 0:
-            right_score += 1
-            ball.reset()
-        elif ball.x > WIDTH:
-            left_score += 1
-            ball.reset()
+        if ball.x < 0:  # ถ้าลูกบอลชนขอบซ้ายของหน้าต่าง
+            right_score += 1  # เพิ่มคะแนนของผู้เล่นทางขวา
+            ball.reset()  # รีเซ็ตตำแหน่งลูกบอล
+        elif ball.x > WIDTH:  # ถ้าลูกบอลชนขอบขวาของหน้าต่าง
+            left_score += 1  # เพิ่มคะแนนของผู้เล่นทางซ้าย
+            ball.reset()  # รีเซ็ตตำแหน่งลูกบอล
 
         # ตรวจสอบการชนของลูกบอลกับกระดานและเมื่อมีผู้ชนะ
-        won = False
-        if left_score >= WINNING_SCORE:
-            won = True
-            win_text = "Left Player Won!"
-        elif right_score >= WINNING_SCORE:
-            won = True
-            win_text = "Right Player Won!"
+        won = False  # ตัวแปรเพื่อตรวจสอบว่ามีผู้ชนะหรือไม่
+        if left_score >= WINNING_SCORE:  # ถ้าผู้เล่นทางซ้ายชนะ
+            won = True  # มีผู้ชนะ
+            win_text = "Left Player Won!"  # ข้อความที่แสดงว่าผู้เล่นทางซ้ายชนะ
+        elif right_score >= WINNING_SCORE:  # ถ้าผู้เล่นทางขวาชนะ
+            won = True  # มีผู้ชนะ
+            win_text = "Right Player Won!"  # ข้อความที่แสดงว่าผู้เล่นทางขวาชนะ
 
         # แสดงผลข้อความผู้ชนะและรีเซ็ตเกมเมื่อมีผู้ชนะ
-        if won:
-            text = SCORE_FONT.render(win_text, 1, WHITE)
-            WIN.blit(text, (WIDTH//2 - text.get_width() //
-                            2, HEIGHT//2 - text.get_height()//2))
-            pygame.display.update()
-            pygame.time.delay(5000)
-            ball.reset()
-            left_paddle.reset()
-            right_paddle.reset()
-            left_score = 0
-            right_score = 0
+        if won: # ถ้ามีผู้ชนะ
+            text = SCORE_FONT.render(win_text, 1, WHITE) # สร้างข้อความที่จะแสดงผล
+            WIN.blit(text, (WIDTH//2 - text.get_width() // 2, HEIGHT//2 - text.get_height()//2)) # แสดงข้อความ
+            pygame.display.update() # อัปเดตหน้าต่างเกม
+            pygame.time.delay(5000) # รอเวลาสักครู่
+            ball.reset() # รีเซ็ตตำแหน่งลูกบอล
+            left_paddle.reset() # รีเซ็ตตำแหน่ง paddle ทางซ้าย
+            right_paddle.reset() # รีเซ็ตตำแหน่ง paddle ทางขวา
+            left_score = 0 # รีเซ็ตคะแนนของผู้เล่นทางซ้าย
+            right_score = 0 # รีเซ็ตคะแนนของผู้เล่นทางขวา
 
-    pygame.quit()
+    pygame.quit() # ปิด pygame
 
 
 if __name__ == '__main__':
-    main()
+    main() # เรียกใช้ฟังก์ชันหลัก
